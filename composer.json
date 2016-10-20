@@ -1,0 +1,19 @@
+{
+    "name": "xdroidteam/log-sent-messages",
+    "description": "Log sent messages to DB.",
+    "license": "MIT",
+    "keywords": ["laravel", "log", "sent", "messages", "email"],
+    "authors": [
+        {
+            "name": "Xdroid KFT.",
+            "email": "info@xdroid.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Xdroidteam\\LogSentMessages\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {}
+}
