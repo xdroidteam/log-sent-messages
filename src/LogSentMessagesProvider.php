@@ -23,6 +23,7 @@ class LogSentMessagesProvider extends ServiceProvider
                                 'plain' => $messageObject
                                 ]);
         });
+        
     }
 
     private function arrayToEmail($emails){
@@ -49,6 +50,7 @@ class LogSentMessagesProvider extends ServiceProvider
         $router->group($config, function($router)
         {
             $router->post('/search', 'LogSentMessagesController@setFilter');
+            $router->get('/reset-search', 'LogSentMessagesController@resetFilter');
             $router->get('/{id?}', 'LogSentMessagesController@index');
         });
     }

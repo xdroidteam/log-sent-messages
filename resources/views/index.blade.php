@@ -23,6 +23,9 @@
             font-size: 100%;
             line-height: 1.5;
         }
+        a:visited {
+            color: currentColor;
+        }
         .wrapper {
             height: 100%;
             width: 100%;
@@ -30,29 +33,30 @@
         .Email {
             height: 100%;
             width: 100%;
-            display: -webkit-flex;
-            display: -ms-flexbox;
             display: flex;
-            -webkit-flex-direction: row;
-            -ms-flex-direction: row;
             flex-direction: row;
-            -webkit-justify-content: flex-start;
-            -ms-flex-pack: start;
             justify-content: flex-start;
-            -webkit-align-items: flex-start;
-            -ms-flex-align: start;
-            align-items: flex-start;
+            align-items: stretch;
         }
         .List {
-            -webkit-flex: 2;
-            -ms-flex: 2;
             flex: 2;
-            -webkit-flex-basis: 100px;
-            -ms-flex-preferred-size: 100px;
             flex-basis: 100px;
             padding-top: 120px;
             position: relative;
-            height: calc(100% - 120px);
+            /*min-height: calc(100% - 120px);*/
+            height: 100%;
+            border-right: 1px solid #DEDEDE;
+        }
+        .List__reset {
+            position: absolute;
+            align-items: center;
+            top: 5px;
+            right: 0;
+            z-index: 10;
+            display: block;
+            padding: 12px 24px;
+            cursor: pointer;
+            text-decoration: none;
         }
         .List__search {
             position: absolute;
@@ -61,22 +65,21 @@
             height: 60px;
             width: calc(100% - 31px);
             border-bottom: 1px solid #EDEDED;
-            border-right: 1px solid #EDEDED;
-            display: -webkit-flex;
-            display: -ms-flexbox;
             display: flex;
-            -webkit-align-items: center;
-            -ms-flex-align: center;
             align-items: center;
-            -webkit-justify-content: flex-start;
-            -ms-flex-pack: start;
             justify-content: flex-start;
             padding-left: 30px;
+        }
+
+        .List__search form {
+            height: 100%;
+            width: 100%;
+            display: block;
         }
         .List__search input {
             border: 0;
             outline: 0;
-            height: calc(100% - 20px);
+            height: 100%;
             width: 100%;
             color: #6D788E;
         }
@@ -85,7 +88,6 @@
             outline: 0;
         }
         .List__pagination {
-            border-right: 1px solid #EDEDED;
             height: 60px;
             position: absolute;
             background-color: #F6F7FA;
@@ -93,21 +95,14 @@
             left: 0;
             width: calc(100% - 1px);
             border-bottom: 1px solid #EDEDED;
-            display: -webkit-flex;
-            display: -ms-flexbox;
             display: flex;
-            -webkit-align-items: center;
-            -ms-flex-align: center;
             align-items: center;
-            -webkit-justify-content: center;
-            -ms-flex-pack: center;
             justify-content: center;
         }
         .List__item {
             height: auto;
             padding: 15px 30px;
             border-bottom: 1px solid #EDEDED;
-            border-right: 1px solid #EDEDED;
             transition: all .2s ease;
             background-color: #F6F7FA;
             cursor: pointer;
@@ -137,16 +132,63 @@
             color: #6D788E;
             font-size: 12px;
         }
+        .List--hidden {
+            display: none;
+        }
         .List__subject {
             font-weight: 700;
             color: #323544;
             font-size: 14px;
         }
+        .Feedback {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25em;
+            color: #6D788E;
+        }
+
+        .Feedback form {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .Feedback form input {
+            transition: all 0.25s ease;
+        }
+
+        .Feedback form input:hover,
+        .Feedback form input:active,
+        .Feedback form input:focus {
+            border-color: #6D788E;
+        }
+        .Feedback__button {
+            padding: 6px 12px;
+            border: 1px solid #EDEDED;
+            font-size: 1em;
+            color: #6D788E;
+            text-decoration: none;
+            margin-right: 12px;
+            transition: all 0.25s ease;
+        }
+        .Feedback__button:hover {
+            border-color: #6D788E;
+        }
+        .Search__input--feedback {
+            border: 1px solid #EDEDED;
+            outline: 0;
+            padding: 6px;
+            color: #6D788E;
+            text-align: center;
+        }
         .View {
-            -webkit-flex: 5;
-            -ms-flex: 5;
             flex: 5;
             padding: 40px 70px;
+            border-left: 1px solid #EDEDED;
+            min-height: calc(100% - 80px);
         }
         .View__date {
             font-size: 14px;
@@ -223,11 +265,19 @@
 <body>
     <div class="wrapper">
         <div class="Email">
-            <div class="List">
+            <div class="List
+                @if(count($emails) == 0)
+                    List--hidden
+                @endif">
+                @if(Session::has('xdroidteam-logsentmessages-filter'))
+                    <a href="{{{ '/' . config('xdroidteam-logsentmessages.route.prefix') . '/reset-search' }}}" class="List__reset" title="Reset search">
+                        x
+                    </a>
+                @endif
                 <div class="List__search">
                     <form action="/{{{ config('xdroidteam-logsentmessages.route.prefix') }}}/search" method="post">
                         {{{ csrf_field() }}}
-                        <input id="search-input"
+                        <input class="Search__input"
                             type="text"
                             name="search"
                             value="{{{ Session::get('xdroidteam-logsentmessages-filter', '') }}}"
@@ -252,23 +302,40 @@
                                 @endforeach
                             </div>
                             <div class="List__date">
-                                {{ $email->created_at }}
+                                {{ $email->created_at }} ({{ Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $email->created_at)->diffForHumans() }})
                             </div>
                         </a>
                     @endforeach
-                    @if(count($emails) == 0)
-                        <div class="List__item">
-                            <div class="List__subject">
-                                No results for your search!
-                            </div>
-                        </div>
-                    @endif
                 </div>
             </div>
             <div class="View">
+                @if(count($emails) == 0 && Session::has('xdroidteam-logsentmessages-filter'))
+                    <div class="Feedback">
+                        <div>
+                            No results for your search! Try again?
+                        </div>
+                        <form action="/{{{ config('xdroidteam-logsentmessages.route.prefix') }}}/search" method="post">
+                            {{{ csrf_field() }}}
+                            <a href="{{{ '/' . config('xdroidteam-logsentmessages.route.prefix') . '/reset-search' }}}" class="Feedback__button">
+                                Back
+                            </a>
+                            <input class="Search__input Search__input--feedback"
+                                type="text"
+                                name="search"
+                                value="{{{ Session::get('xdroidteam-logsentmessages-filter', '') }}}"
+                                data-original-value="{{{ Session::get('xdroidteam-logsentmessages-filter', '') }}}"
+                                placeholder="Search..."
+                            />
+                        </form>
+                    </div>
+                @elseif (count($emails) == 0 && !Session::has('xdroidteam-logsentmessages-filter'))
+                    <div class="Feedback">
+                        We have not found any log messages yet.
+                    </div>
+                @endif
                 @if($selectedEmail)
                     <div class="View__date">
-                        {{ $selectedEmail->created_at }}
+                        {{ $selectedEmail->created_at }} ({{ Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $selectedEmail->created_at)->diffForHumans() }})
                     </div>
                     <div class="View__subject">
                         {{ $selectedEmail->subject }}
@@ -318,7 +385,7 @@
                 borderRadius: '0'
             });
 
-            $(document).on('keyup', '#search-input', function(event) {
+            $(document).on('keyup', '.Search__input', function(event) {
                 if (event.keyCode == 13) {
                     $(this).parent('form').submit();
                 }
@@ -327,7 +394,15 @@
                     $(this).blur();
                 }
             });
+
+            $("img").each(function(){
+                var image = $(this);
+                if(image.prop('naturalHeight') == 0){
+                    $(image).hide();
+                }
+            });
         });
     </script>
 </body>
 </html>
+                                                     

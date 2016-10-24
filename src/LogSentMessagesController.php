@@ -37,4 +37,10 @@ class LogSentMessagesController extends BaseController
 
         return redirect()->to('/' . config('xdroidteam-logsentmessages.route.prefix'));
     }
+
+    public function resetFilter(){
+        Session::forget('xdroidteam-logsentmessages-filter');
+        
+        return redirect()->to('/' . config('xdroidteam-logsentmessages.route.prefix'));
+    }
 }
