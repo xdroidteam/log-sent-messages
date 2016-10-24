@@ -276,7 +276,7 @@
                 @endif
                 <div class="List__search">
                     <form action="/{{{ config('xdroidteam-logsentmessages.route.prefix') }}}/search" method="post">
-                        {{{ csrf_field() }}}
+                        <input type="hidden" name="_token" value="{{{ csrf_token() }}}">
                         <input class="Search__input"
                             type="text"
                             name="search"
