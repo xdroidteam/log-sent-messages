@@ -11,7 +11,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Xdroidteam\\LogSentMessages\\": "src/"
+            "XdroidTeam\\LogSentMessages\\": "src/"
         }
     },
     "minimum-stability": "dev",
